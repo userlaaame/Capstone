@@ -1,0 +1,19 @@
+//For points economy, values due to change so no other file should hardcode this for now
+export const POINTS ={
+    SUBMISSION: 10, //awarded when a potential anomaly is submitted
+    VERIFIED: 50,   //awarded when an overseer verifies it
+}
+
+//Rank is computed from points so it's not stored on a user doc and
+//the threshold is minimum points, checked highest to lowest.
+export const RANKS = [
+    { title: 'Site Director', minPoints: 400 },
+    { title: 'Containment Specialist', minPoints: 150 },
+    { title: 'Field Agent', minPoints: 50 },
+    { title: 'Recruit', minPoints: 0},
+];
+
+//One function, used by roster routes+anywhere rank is shown
+export function rankForPoints(points) {
+    return RANKS.find((rank) => points >= rank.minPoints).title;
+}
