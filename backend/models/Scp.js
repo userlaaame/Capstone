@@ -24,7 +24,7 @@ const scpSchema = new mongoose.Schema(
         objectClass: {
             type: String,
             enum: {
-                values: ['Safe', 'Euclid', 'Keter', 'Thamiel', 'Neutralized'],
+                values: ['Safe', 'Euclid', 'Keter', 'Thaumiel', 'Neutralized'],
                 message: '{VALUE} is not a recognized object class',
             },
         },
