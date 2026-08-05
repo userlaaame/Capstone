@@ -208,7 +208,7 @@ const seed = async () => {
         {
             itemNumber: 'SCP-106',
             title: 'The Old Man',
-            objectClass: 'Thaumiel',
+            objectClass: 'Keter',
             series: 1,
             containmentProcedures:
                 'SCP-106 is to be contained in a sealed container, comprised of lead-lined steel. The ' +
@@ -305,7 +305,7 @@ const seed = async () => {
         {
             itemNumber: 'SCP-682',
             title: 'Hard-to-Destroy-Reptile',
-            objectClass: 'Thaumiel',
+            objectClass: 'Keter',
             series: 1,
             containmentProcedures:
                 'SCP-682 must be destroyed as soon as possible. At this time, no means available to SCP ' +
@@ -494,6 +494,7 @@ const seed = async () => {
     // ----As much as i don't want to right now, Pending data for Potential Anomalies is here.. ----
     const pendingData = [
         {
+            itemNumber: null,
             title: 'Recurring geometric lights over Route 9',
             description: 'Triangular light formation observed on three consecutive nights. Local dogs refuse to go outside.',
             status: 'pending',
@@ -501,6 +502,7 @@ const seed = async () => {
             lastSeenLocation: { type: 'Point', coordinates: [-72.68, 41.76] },
         },
         {
+            itemNumber: 'SCP-1007',
             title: 'Vending machine dispensing unlisted items',
             description: 'Machine in hospital basement dispenses items not in inventory, including one (1) live goldfish.',
             status: 'pending',
