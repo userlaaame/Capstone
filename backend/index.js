@@ -1,4 +1,5 @@
 //main server
+import 'dotenv/config'; //insurance for .env.PORT
 import cors from 'cors';
 import express from 'express';
 import connectDB from './db/conn.js';
