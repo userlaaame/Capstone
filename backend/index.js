@@ -5,6 +5,8 @@ import express from 'express';
 import connectDB from './db/conn.js';
 import errorHandler from './middleware/errorHandler.js';
 import authRoutes from './routes/auth.js';
+import scpRoutes from './routes/scps.js';
+import userRoutes from './routes/users.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -25,8 +27,8 @@ app.get('/', (req, res) => {
 
 // Routers mounted here as they're built:
 app.use('/auth', authRoutes);
-// app.use('/scps', scpRoutes);
-// app.use('/users', userRoutes);
+app.use('/scps', scpRoutes);
+app.use('/users', userRoutes);
 // app.use('/incidents', incidentRoutes);
 
 // ---- 404 catch-all ----
