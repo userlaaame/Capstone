@@ -4,6 +4,10 @@ export const POINTS ={
     VERIFIED: 50,   //awarded when an overseer verifies it
 }
 
+//Blocklist, not an allowlist: anything not named here can still authenticate.
+//'Reassigned' is deliberately absent; transferred but functional.
+export const LOCKED_OUT_STATUSES = ['MIA', 'Deceased'];
+
 //Rank is computed from points so it's not stored on a user doc and
 //the threshold is minimum points, checked highest to lowest.
 export const RANKS = [

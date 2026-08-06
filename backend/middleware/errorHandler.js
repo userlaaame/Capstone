@@ -18,6 +18,12 @@ const errorHandler = (err, req, res, next) => {
     if (err.code === 121) { // code 121 = DocumentValidationfailure, this now sits above 500 and works properly
         return res.status(400).json({ error: 'Document failed database-level validation' })
     }
+    // body-parser marks client-fault errors with expose:true and the right status
+    // already set: bad JSON (400), payload too large (413), bad content-type (415).
+    // Without this they all fall through and get reported as our fault.
+    if (err.expose && err.statusCode >= 400 && err.statusCode < 500) {
+        return res.status(err.statusCode).json({ error: err.message });
+    }
     console.error(err);
     res.status(500).json({ error: 'Internal server error' });
 };
