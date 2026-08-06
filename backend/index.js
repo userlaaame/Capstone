@@ -4,13 +4,18 @@ import cors from 'cors';
 import express from 'express';
 import connectDB from './db/conn.js';
 import errorHandler from './middleware/errorHandler.js';
+import authRoutes from './routes/auth.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // ---- Middleware ----
-app.use(cors()); //should allow for browser requests from anywhere
+//only the frontend origin, not the wildcard. Env var so prod can differ from dev.
+app.use(cors({ origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173' }));
 app.use(express.json()); //this should parse json requests
+//Express 5 leaves req.body undefined when no parser matched (v4 gave you {}),
+//so destructuring it in a controller throws a TypeError and reads as a 500.
+app.use((req, res, next) => { req.body ??= {}; next(); });
 
 // ---- Routes ----
 // Root route: I want this to confirm the server is alive
@@ -19,7 +24,7 @@ app.get('/', (req, res) => {
 });
 
 // Routers mounted here as they're built:
-// app.use('/auth', authRoutes);
+app.use('/auth', authRoutes);
 // app.use('/scps', scpRoutes);
 // app.use('/users', userRoutes);
 // app.use('/incidents', incidentRoutes);
