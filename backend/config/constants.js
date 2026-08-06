@@ -18,6 +18,9 @@ export const RANKS = [
 ];
 
 //One function, used by roster routes+anywhere rank is shown
+//Fallback matters: negative or undefined points match no threshold, and without
+//it .find() returns undefined and .title throws - which 500s the whole roster
+//because rank is computed inside a map() over every user.
 export function rankForPoints(points) {
-    return RANKS.find((rank) => points >= rank.minPoints).title;
+    return (RANKS.find((rank) => points >= rank.minPoints) ?? RANKS.at(-1)).title;
 }

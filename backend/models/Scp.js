@@ -1,5 +1,37 @@
 import mongoose from 'mongoose';
 
+//Its own sub-schema so the parent can default to undefined. Declared inline, a
+//default on the nested 'type' path makes Mongoose build { type: 'Point' } with no
+//coordinates on EVERY document which the 2dsphere index rejects at insert with
+//"Can't extract geo keys" (error 16755). _id:false keeps it a plain embedded object.
+const pointSchema = new mongoose.Schema(
+    {
+        type: {
+            type: String,
+            enum: ['Point'],
+            default: 'Point',
+        },
+        coordinates: {
+            type: [Number],     // it loooks like GeoJSON order should go from longitude -> latitude
+            required: true,
+            //LIMITATION - a lat/lng swap cannot be caught here. [41.76, -72.68] is
+            //Connecticut written backwards, but it is also a perfectly valid point
+            //off the coast of Somalia, so it passes every check below. Verified
+            //against Atlas: it inserts clean and $near will happily return it.
+            //Anything with |lat| <= 90 has an in-range mirror image, so the only
+            //real defence is the submission form labelling the two fields clearly
+            //and sending them in GeoJSON order; longitude FIRST, which is the
+            //reverse of how people say coordinates out loud.
+            validate: {
+                validator: (v) =>
+                    v.length === 2 && v[0] >= -180 && v[0] <= 180 && v[1] >= -90 && v[1] <= 90,
+                message: 'coordinates must be [longitude, latitude] within valid ranges',
+            },
+        },
+    },
+    { _id: false }
+);
+
 const scpSchema = new mongoose.Schema(
     {
         //=== identity: assigned at verification ===
@@ -51,16 +83,9 @@ const scpSchema = new mongoose.Schema(
         },
 
         //=== geo + media (ported from my 319 sba extension) ===
-        lastSeenLocation: {
-            type: {
-                type: String,
-                enum: ['Point'],
-                default: 'Point',
-            },
-            coordinates: {
-                type: [Number],     // it loooks like GeoJSON order should go from longitude -> latitude
-            },
-        },
+        //default:undefined is load-bearing; it keeps the field off the document
+        //entirely when unset, and a 2dsphere index skips documents missing the field
+        lastSeenLocation: { type: pointSchema, default: undefined },
         imageUrl: {
             type: String,
             match: [/^https:\/\/.+/, 'Image URL must be https'],
