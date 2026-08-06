@@ -56,7 +56,10 @@ export const login = async (req, res) => {
     if (!user || !passwordMatches) {
         return res.status(401).json({ error: 'Invalid credentials' });
     }
-
+    //this should stop constant request; after password checks so accounts stay hidden
+    if (user.status !== 'Active') {
+        return res.status(403).json({ error: `Account is flagged ${user.status} - access revoked` });
+    }
     res.json({ token: signToken(user), user });
 };
 
