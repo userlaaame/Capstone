@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
     "dev": "node --watch index.js",
-    "seed": "node seed.js"
+    "seed": "node seed.js",
+    "geo-check": "node scripts/geo-check.mjs"
   },
   "keywords": [],
   "author": "",
