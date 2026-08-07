@@ -17,7 +17,7 @@ export default function App() {
                 <Route path="/submit" element={<Submit />} />
                 <Route path="/command" element={<Command />} />
                 <Route path="/login" element={<Login />} />
-                <Route path="*" element={<AccessDenied />} />
+                <Route path="/denied" element={<AccessDenied />} />
             </Routes>
         </div>
     );
