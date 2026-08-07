@@ -1,0 +1,41 @@
+/* ---- nav ---- */
+.navbar {
+    display: flex; align-items: center; gap: 24px;
+    padding: 12px 18px; border-bottom: 1px solid var(--border);
+}
+.brand { font-weight: 500; letter-spacing: 0.05em; }
+.nav-links { display: flex; gap: 16px; flex: 1; }
+.nav-links a, .nav-user a { color: var(--muted); text-decoration: none; font-size: 13px; }
+.nav-links a.active { color: var(--amber); }
+.nav-links a:hover, .nav-user a:hover { color: var(--text); }
+.nav-user { display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--muted); }
+.nav-user button {
+    background: none; border: 1px solid var(--border); border-radius: 4px;
+    color: var(--muted); padding: 4px 10px; font-family: inherit; font-size: 11px; cursor: pointer;
+}
+
+/* ---- shared page bits ---- */
+.page { padding: 18px; max-width: 720px; }
+.page h2 { font-weight: 500; margin-top: 0; }
+.detail-subhead { font-size: 13px; color: var(--muted); margin: 14px 0 6px; font-weight: 500; }
+.approach-list { margin: 0 0 14px; padding-left: 18px; font-size: 13px; line-height: 1.7; }
+.form-field { display: block; margin-bottom: 12px; }
+.form-field span { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+.form-field input, .form-field textarea, .form-field select {
+    width: 100%; padding: 8px 10px; background: var(--panel);
+    border: 1px solid var(--border); border-radius: 4px;
+    color: var(--text); font-family: inherit; font-size: 13px;
+}
+.btn {
+    background: var(--amber); color: #412402; border: none; border-radius: 4px;
+    padding: 8px 16px; font-family: inherit; font-size: 13px; cursor: pointer;
+}
+.btn-secondary { background: var(--panel); color: var(--text); border: 1px solid var(--border); }
+.form-error { color: var(--keter); font-size: 12px; margin: 8px 0; }
+.form-success { color: var(--safe); font-size: 12px; margin: 8px 0; }
+
+/* ---- layout ---- */
+.app { display: flex; flex-direction: column; height: 100vh; }
+
+.app-body { flex: 1; overflow: hidden; }
+

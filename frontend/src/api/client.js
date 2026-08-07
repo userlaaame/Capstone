@@ -15,9 +15,9 @@ export async function request(path, { method = 'GET', body, token } = {}) {
     } catch {
         //fetch only rejects on network failure, and the raw message is
         //"Failed to fetch" which tells a user nothing. status 0 is the signal
-        //to callers that the server was never reached - AuthContext relies on
+        //to callers that the server was never reached AuthContext relies on
         //this to avoid throwing away a valid token when the API is just asleep.
-        const offline = new Error('Cannot reach the server. It may be starting up - try again in a moment.');
+        const offline = new Error('Cannot reach the server. It may be starting up, try again in a moment.');
         offline.status = 0;
         throw offline;
     }
