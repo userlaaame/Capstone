@@ -24,6 +24,11 @@ function authReducer(state, action) {
         case 'authed': return { ...state, status: 'ready', submitting: false, token: action.payload.token, user: action.payload.user, error: null };
         case 'logout': return { ...state, status: 'ready', submitting: false, token: null, user: null, error: null };
         case 'error': return { ...state, status: 'ready', submitting: false, error: action.payload };
+        //the dispatches above only clear the error when something new STARTS. A
+        //screen that changes what the user is looking at without firing a request
+        //- switching the login form to register, say - needs to clear it too, or
+        //the old failure hangs around under the new form.
+        case 'clear_error': return { ...state, error: null };
         case 'ready': return { ...state, status: 'ready' };
         default: return state;
     }
@@ -99,6 +104,7 @@ export function AuthProvider({ children }) {
         localStorage.removeItem(TOKEN_KEY);
         dispatch({ type: 'logout' });
     }, []);
+    const clearError = useCallback(() => dispatch({ type: 'clear_error' }), []);
 
     //FIX 3 - without useMemo this object was rebuilt on every render, so every
     //useAuth() consumer re-rendered on any change anywhere, and any effect with
@@ -109,7 +115,8 @@ export function AuthProvider({ children }) {
         login,
         register,
         logout,
-    }), [state, login, register, logout]);
+        clearError,
+    }), [state, login, register, logout, clearError]);
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
