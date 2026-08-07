@@ -8,7 +8,7 @@ an overseer.
 
 **Stack:** MongoDB Atlas, Express 5, React 19 (Vite), Node.js
 **API:** https://capstone-kgru.onrender.com
-**Frontend:** https://scpdetect.netlify.app (deployment in progress — see Known
+**Frontend:** https://scpdetect.netlify.app (deployment in progress; see Known
 limitations; the application runs fully on localhost)
 
 ## The core loop
@@ -156,7 +156,7 @@ npm run dev
 
 
 Seeded overseer account: `o5_command` / `containment-breach-9` (override with
-`SEED_OVERSEER_PASSWORD`). This is a demo credential in a public repository — a
+`SEED_OVERSEER_PASSWORD`). This is a demo credential in a public repository; a
 real deployment would not ship one.
 
 ## Known limitations
