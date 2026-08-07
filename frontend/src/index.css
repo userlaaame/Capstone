@@ -1,3 +1,120 @@
+/* ---- SCP terminal theme ---- */
+:root {
+    --bg: #0f1210;
+    --panel: #171b15;
+    --border: #2b332a;
+    --text: #dce3d8;
+    --muted: #8b968a;
+    --amber: #d9a441;
+    --safe: #6fae7a;
+    --euclid: #d9a441;
+    --keter: #c85a4a;
+    --thaumiel: #7fa8c9;
+    --neutralized: #8b968a;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "SF Mono", Consolas, "Courier New", monospace;
+    font-size: 14px;
+}
+
+.sidebar {
+    width: 300px;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+.content { flex: 1; overflow-y: auto; padding: 18px; }
+
+/* ---- search + filters ---- */
+.search-bar {
+    margin: 12px;
+    padding: 8px 10px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+}
+.search-bar:focus { outline: none; border-color: var(--amber); }
+
+.class-filter {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    padding: 0 12px 12px;
+    border-bottom: 1px solid var(--border);
+}
+.chip {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--muted);
+    padding: 4px 10px;
+    font-family: inherit; font-size: 11px; cursor: pointer;
+}
+.chip:hover { border-color: var(--amber); color: var(--text); }
+.chip-active { background: var(--amber); color: #412402; border-color: var(--amber); }
+
+/* ---- anomaly list ---- */
+.anomaly-list { list-style: none; margin: 0; padding: 0; }
+.anomaly-row {
+    padding: 10px 12px;
+    border-bottom: 1px solid #1c231b;
+    border-left: 2px solid transparent;
+    cursor: pointer;
+}
+.anomaly-row:hover { background: #141812; }
+.anomaly-row.selected { background: #1a2016; border-left-color: var(--amber); }
+.row-number { display: block; font-size: 13px; }
+.row-meta { display: block; color: var(--muted); font-size: 11px; margin-top: 3px; }
+
+/* ---- detail card ---- */
+.detail-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 18px;
+    max-width: 560px;
+}
+.detail-header { display: flex; align-items: baseline; gap: 12px; }
+.detail-header h2 { margin: 0; font-size: 20px; font-weight: 500; }
+.detail-title { color: var(--muted); margin: 4px 0 14px; }
+
+.class-badge { font-size: 11px; padding: 2px 9px; border-radius: 10px; color: #10130f; }
+.class-safe { background: var(--safe); }
+.class-euclid { background: var(--euclid); }
+.class-keter { background: var(--keter); }
+.class-thaumiel { background: var(--thaumiel); }
+.class-neutralized { background: var(--neutralized); }
+
+.detail-image {
+    width: 100%; max-height: 220px; object-fit: cover;
+    border-radius: 4px; border: 1px solid var(--border);
+}
+.detail-image.placeholder {
+    height: 90px; display: flex; align-items: center; justify-content: center;
+    color: #5c665b; background: #0f120e; font-size: 12px;
+}
+
+.detail-stats {
+    display: grid; grid-template-columns: auto 1fr; gap: 4px 16px;
+    margin: 16px 0; font-size: 12px;
+}
+.detail-stats dt { color: var(--muted); }
+.detail-stats dd { margin: 0; }
+.detail-description { line-height: 1.7; color: #c3ccbf; font-size: 13px; }
+
+/* ---- states ---- */
+.status-message, .detail-empty, .empty-state {
+    color: var(--muted); padding: 18px; font-size: 13px;
+}
+
 /* ---- nav ---- */
 .navbar {
     display: flex; align-items: center; gap: 24px;
@@ -37,5 +154,5 @@
 /* ---- layout ---- */
 .app { display: flex; flex-direction: column; height: 100vh; }
 
-.app-body { flex: 1; overflow: hidden; }
+.app-body { display: flex; flex: 1; overflow: hidden; }
 
