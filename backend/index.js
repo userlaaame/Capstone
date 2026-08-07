@@ -12,8 +12,18 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // ---- Middleware ----
-//only the frontend origin, not the wildcard. Env var so prod can differ from dev.
-app.use(cors({ origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173' }));
+//array so local dev and the deployed frontend both work. Named origins only,
+//never the wildcard; .filter(Boolean) matters because an unset CLIENT_ORIGIN
+//would otherwise put undefined in the list for cors to compare against.
+const allowedOrigins = [
+    process.env.CLIENT_ORIGIN,
+    'http://localhost:5173',
+].filter(Boolean);
+
+//MUST be registered before anything that can respond, including the 404 handler
+//below. A preflight or an error that skips these headers still shows up in the
+//browser as a CORS failure rather than the status actually sent.
+app.use(cors({ origin: allowedOrigins }));
 app.use(express.json()); //this should parse json requests
 //Express 5 leaves req.body undefined when no parser matched (v4 gave you {}),
 //so destructuring it in a controller throws a TypeError and reads as a 500.
