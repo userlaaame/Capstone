@@ -68,7 +68,7 @@ export const verifyScp = async (req, res) => {
 
     //apply the completed record, then flip it. Without these assignments save()
     //writes back an unchanged doc, status stays 'pending', and the guard above
-    //never fires - so the same call could be replayed for points forever.
+    //never fires so the same call could be replayed for points forever.
     scp.itemNumber = itemNumber;
     scp.objectClass = objectClass;
     scp.containmentProcedures = containmentProcedures;
@@ -114,6 +114,10 @@ export const logSighting = async (req, res) => {
 
     const scp = await Scp.findById(req.params.id);
     if (!scp) return res.status(404).json({ error: 'Record not found' });
+
+    if (scp.status !== 'verified') {
+        return res.status(409).json({ error: 'Sightings can only be logged against verified records' });
+    }
 
     const sighting = await IncidentReport.create({
         scp: scp._id,
