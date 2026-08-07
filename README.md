@@ -25,23 +25,25 @@ limitations; the application runs fully on localhost)
 
 ## Architecture
 
+```text
 capstone/
 ├── backend/
-│ ├── config/constants.js points values, rank thresholds, rankForPoints()
-│ ├── controllers/ route logic (auth, scps)
-│ ├── db/conn.js single mongoose connection
-│ ├── middleware/ JWT protect, requireOverseer, error handler
-│ ├── models/ Scp, User, IncidentReport
-│ ├── routes/ auth, scps, users
-│ ├── scripts/geo-check.mjs geospatial validation harness
-│ ├── seed.js 15 SCPs, 2 pending reports, mock personnel
-│ └── index.js entry point
+│   ├── config/constants.js       points values, rank thresholds, rankForPoints()
+│   ├── controllers/              route logic (auth, scps)
+│   ├── db/conn.js                single mongoose connection
+│   ├── middleware/               JWT protect, requireOverseer, error handler
+│   ├── models/                   Scp, User, IncidentReport
+│   ├── routes/                   auth, scps, users
+│   ├── scripts/geo-check.mjs     geospatial validation harness
+│   ├── seed.js                   15 SCPs, 2 pending reports, mock personnel
+│   └── index.js                  entry point
 └── frontend/
-├── src/api/client.js single fetch wrapper, attaches JWT
-├── src/context/ AuthContext, AnomalyContext
-├── src/components/NavBar.jsx
-└── src/pages/ Dashboard, Login, Submit, Command,
-Personnel, AccessDenied
+    ├── src/api/client.js         single fetch wrapper, attaches JWT
+    ├── src/context/              AuthContext, AnomalyContext
+    ├── src/components/NavBar.jsx
+    └── src/pages/                Dashboard, Login, Submit, Command,
+                                  Personnel, AccessDenied
+```
 
 
 ## Database design
@@ -129,30 +131,42 @@ legal coordinates), which is documented in its own output.
 
 **Backend:**
 
+```bash
 cd backend
 npm install
+```
 
 Create `backend/.env`:
 
+```ini
 ATLAS_URI=mongodb+srv://<user>:<pass>@<cluster>.mongodb.net/fieldCommand
 JWT_SECRET=<random string>
 CLIENT_ORIGIN=http://localhost:5173
 PORT=3000
+```
 
+```bash
 npm run seed
 npm run dev
+```
 
 
 **Frontend:**
 
+```bash
 cd frontend
 npm install
+```
 
 Create `frontend/.env`:
 
+```ini
 VITE_API_URL=http://localhost:3000
+```
 
+```bash
 npm run dev
+```
 
 
 Seeded overseer account: `o5_command` / `containment-breach-9` (override with
