@@ -1,4 +1,5 @@
 import { useAnomalies } from '../context/AnomalyContext.jsx';
+import AnomalyMap from '../components/AnomalyMap.jsx';
 
 export default function Dashboard() {
     //AnomalyContext spreads its state flat and exposes named actions, matching
@@ -47,6 +48,29 @@ export default function Dashboard() {
                     <p className="empty-state">No anomalies match current parameters.</p>
                 ) : (
                     <ul className="anomaly-list">
+                        {/* TODO a11y - these rows are click-only. A bare <li> is not
+                            focusable and has no implicit role, so it cannot be reached
+                            by Tab and Enter/Space do nothing. Selecting a row is the ONLY
+                            way to drive the detail card and to move AnomalyMap, so with a
+                            keyboard or a screen reader the dashboard is unusable past the
+                            search box and filter chips.
+
+                            Fix is to make the row a real button rather than bolt handlers
+                            onto the <li>, so focus, Enter/Space and the announced role all
+                            come for free:
+
+                              <li key={scp._id} className="anomaly-row-item">
+                                <button
+                                  type="button"
+                                  className={selectedId === scp._id ? 'anomaly-row selected' : 'anomaly-row'}
+                                  aria-current={selectedId === scp._id}
+                                  onClick={() => selectScp(scp._id)}
+                                >...</button>
+                              </li>
+
+                            That needs a CSS pass too .anomaly-row would move onto the
+                            button and need width:100%, text-align:left and background:none
+                            to keep the current look. Pairs with the .anomaly-map rule. */}
                         {visibleScps.map((scp) => (
                             <li
                                 key={scp._id}
@@ -64,6 +88,7 @@ export default function Dashboard() {
             </aside>
 
             <main className="content">
+                <AnomalyMap />
                 {!selected ? (
                     <p className="detail-empty">Select an anomaly to view its file.</p>
                 ) : (

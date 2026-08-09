@@ -30,6 +30,8 @@ body {
     flex-direction: column;
     overflow-y: auto;
 }
+/* also declared in the map section at the bottom of this file, which adds
+   display:flex / flex-direction:column / gap the two rules merge */
 .content { flex: 1; overflow-y: auto; padding: 18px; }
 
 /* ---- search + filters ---- */
@@ -155,4 +157,67 @@ body {
 .app { display: flex; flex-direction: column; height: 100vh; }
 
 .app-body { display: flex; flex: 1; overflow: hidden; }
+
+/* ---- map ----
+   Leaflet has no intrinsic size: it measures its container and paints into it,
+   so without an explicit height the element collapses to 0 and you get blank
+   space, tiles that never request, and no console error saying why. Hence the
+   fixed 340px below rather than a percentage - `height: 100%` would only work
+   if every ancestor also had a resolved height.
+
+   .content is made a column flex container here so the map and the detail card
+   stack with a gap. NOTE it is also declared near the top of this file
+   (flex/overflow-y/padding); the two rules merge, but they are ~150 lines
+   apart, so a change in one place will not be obvious from the other.
+
+   flex: 0 0 340px pins the map on the main axis (height, in a column) so it
+   never shrinks when the detail card gets tall; .content scrolls instead. The
+   height declaration duplicates that on purpose - it is the fallback if
+   .content ever stops being a flex container.
+
+   Still outstanding: if the map is ever mounted hidden (a tab, a collapsed
+   panel) it measures 0 and stays broken after being revealed.
+   map.invalidateSize() on reveal is the fix for that case. */
+.content { display: flex; flex-direction: column; gap: 16px; }
+.anomaly-map {
+    height: 340px;
+    flex: 0 0 340px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: #0c0f0b;
+}
+
+/* Leaflet ships light-themed popups and attribution; retheme them.
+
+   These are plain single-class selectors, so they tie Leaflet's own rules on
+   specificity and the cascade comes down purely to load order. That is why
+   main.jsx imports 'leaflet/dist/leaflet.css' BEFORE './index.css'. Swap those
+   two lines back and every rule below silently stops applying - white popups,
+   #ddd behind the map tiles - with nothing in the console to explain it.
+
+   The !important on the zoom control is a leftover from when the order was
+   wrong; it is no longer needed. Same for the .leaflet-container prefixes
+   further down, which were boosting specificity to win a fight that no longer
+   happens. Both are harmless to leave. */
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+    background: var(--panel);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 12px;
+    border-radius: 4px;
+}
+.leaflet-popup-content { margin: 8px 12px; line-height: 1.5; }
+.leaflet-container a.leaflet-popup-close-button { color: var(--muted); }
+.leaflet-container .leaflet-control-attribution {
+    background: rgba(15, 18, 16, 0.85);
+    color: var(--muted);
+    font-size: 10px;
+}
+.leaflet-container .leaflet-control-attribution a { color: var(--amber); }
+.leaflet-control-zoom a {
+    background: var(--panel) !important;
+    color: var(--text) !important;
+    border-color: var(--border) !important;
+}
 
