@@ -72,7 +72,7 @@ Indexes:
 | users | `username` unique | login lookup |
 | incidentreports | `scp` + `occurredAt` desc | sightings per anomaly, newest first |
 
-`encounterCount` and `points` are deliberately **not** indexed — both are
+`encounterCount` and `points` are deliberately **not** indexed; both are
 write-heavy counters, and at this scale index maintenance would cost more than
 faster reads would save.
 
