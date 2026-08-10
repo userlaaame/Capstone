@@ -1,5 +1,7 @@
 import { Routes, Route } from 'react-router';
 import NavBar from './components/NavBar.jsx';
+//BLACKSITE: the telemetry strip closes the shell header on every screen
+import TelemetryStrip from './components/TelemetryStrip.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import Personnel from './pages/Personnel.jsx';
 import Submit from './pages/Submit.jsx';
@@ -11,6 +13,7 @@ export default function App() {
     return (
         <div className="app">
             <NavBar />
+            <TelemetryStrip />
             <Routes>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/personnel" element={<Personnel />} />

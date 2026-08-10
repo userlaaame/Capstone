@@ -7,7 +7,15 @@ export default function NavBar() {
 
     return (
         <nav className="navbar">
-            <span className="brand">Field Command</span>
+            {/* BLACKSITE: mark + hairline + wordmark. .bs-mark-scan drives the
+                stepped sweep; the wrapper span rotates, the <img> pushes in and out. */}
+            <span className="brand-lockup">
+                <span className="bs-mark-scan">
+                    <img src="/containment-mark.png" width="20" height="20" alt="" />
+                </span>
+                <span className="brand-rule" />
+                <span className="brand">Field Command</span>
+            </span>
             <div className="nav-links">
                 <NavLink to="/">Dashboard</NavLink>
                 <NavLink to="/personnel">Personnel</NavLink>

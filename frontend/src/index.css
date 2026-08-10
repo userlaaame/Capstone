@@ -1,223 +1,924 @@
-/* ---- SCP terminal theme ---- */
+@import url("https://fonts.googleapis.com/css2?family=Anonymous+Pro:wght@400;700&family=Courier+Prime:wght@400;700&family=Kode+Mono:wght@400..700&family=Martian+Mono:wght@100..800&display=swap");
+
+/* ============================================================
+   BLACKSITE — Field Command terminal
+   Drop-in replacement for src/index.css. Every existing class
+   name is preserved, so no JSX has to change to get the skin.
+
+   Superseded: the green-terminal theme (--bg #0f1210, --amber,
+   4-12px radii, ease transitions). The only values carried
+   forward are the five object-class hues, which are now DATA
+   ONLY — chips and map markers, never a surface.
+
+   Pairs with the patched Dashboard.jsx in this folder, which adds the
+   markup CSS cannot invent: the stage overlay elements (scan lines, grid,
+   thermal), the class badge on each index row, the instrument tag above
+   the item number, and the right-rail RECORD STATUS + PLOT LEGEND.
+
+   Still needs its own pass, not covered here:
+     1. the roster table columns (Personnel.jsx renders two spans)
+     2. the submit-form live preview pane
+     3. the review queue master/detail split
+   ============================================================ */
+
 :root {
-    --bg: #0f1210;
-    --panel: #171b15;
-    --border: #2b332a;
-    --text: #dce3d8;
-    --muted: #8b968a;
-    --amber: #d9a441;
+    /* ground and structure */
+    --bs-ground: #000000;
+    --bs-stage: #030303;
+    --bs-stage-hot: #080000;
+    --bs-hairline: #262626;
+    --bs-hairline-in: #181818;
+
+    /* text ladder, brightest to dimmest. there is no #ffffff here */
+    --bs-ceiling: #e9eaec;
+    --bs-body: #777777;
+    --bs-muted: #6a6a6a;
+    --bs-label: #a2a2a2;
+    --bs-tertiary: #818181;
+    --bs-recessed: #242424;
+
+    /* signal — danger and denial only. never generic emphasis */
+    --bs-signal: #ff0000;
+    --bs-signal-dim: #3a0000;
+
+    /* object class — chips <=12px and map markers <=11px radius only */
     --safe: #6fae7a;
     --euclid: #d9a441;
     --keter: #c85a4a;
     --thaumiel: #7fa8c9;
     --neutralized: #8b968a;
+    --unclassified: #5c665b;
+
+    /* type */
+    --bs-display: 'Martian Mono', monospace;
+    --bs-ui: 'Kode Mono', monospace;
+    --bs-micro: 'Anonymous Pro', monospace;
+    --bs-doc: 'Courier Prime', 'Courier New', monospace;
+
+    --bs-size-number: clamp(48px, 6vw, 96px);
+    --bs-size-heading: clamp(15px, 1.2vw, 20px);
+    --bs-size-title: clamp(13px, 1vw, 16px);
+    --bs-size-doc: clamp(12px, .8vw, 14px);
+    --bs-size-code: clamp(9px, .52vw, 12px);
+    --bs-size-micro: clamp(9px, .5vw, 11px);
+
+    --bs-track-code: 1.35px;
+    --bs-track-micro: .9px;
+    --bs-track-title: -.7px;
+
+    /* geometry - radius is zero everywhere, no exceptions */
+    --bs-radius: 0;
+    --bs-cursor: crosshair;
+
+    /* legacy aliases, so any straggling var() in JSX still resolves */
+    --bg: var(--bs-ground);
+    --panel: transparent;
+    --border: var(--bs-hairline);
+    --text: var(--bs-body);
+    --muted: var(--bs-muted);
+    --amber: var(--bs-tertiary);
 }
 
 * { box-sizing: border-box; }
 
 body {
     margin: 0;
-    background: var(--bg);
-    color: var(--text);
-    font-family: "SF Mono", Consolas, "Courier New", monospace;
-    font-size: 14px;
+    background: var(--bs-ground);
+    color: var(--bs-body);
+    font-family: var(--bs-micro);
+    font-size: var(--bs-size-micro);
+    letter-spacing: var(--bs-track-micro);
+    text-transform: uppercase;
+    -webkit-font-smoothing: antialiased;
 }
+
+a { color: var(--bs-tertiary); text-decoration: none; cursor: var(--bs-cursor); }
+a:hover { color: var(--bs-ceiling); }
+
+button, input, select, textarea {
+    font: inherit; letter-spacing: inherit; text-transform: inherit;
+    border-radius: 0;
+}
+button, [role="button"], summary { cursor: var(--bs-cursor); }
+
+/* the source site had no visible focus at all. this system requires one */
+:focus-visible { outline: 1px solid var(--bs-signal); outline-offset: 2px; }
+::selection { background: var(--bs-signal); color: #000; }
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--bs-ground); }
+::-webkit-scrollbar-thumb { background: var(--bs-hairline); }
+::-webkit-scrollbar-thumb:hover { background: var(--bs-tertiary); }
+
+/* ---- layout ---- */
+.app { display: flex; flex-direction: column; height: 100vh; }
+.app-body { display: flex; flex: 1; overflow: hidden; }
 
 .sidebar {
     width: 300px;
-    border-right: 1px solid var(--border);
+    flex: 0 0 300px;
+    min-width: 0;
+    border-right: 1px solid var(--bs-hairline);
     display: flex;
     flex-direction: column;
     overflow-y: auto;
-}
-/* also declared in the map section at the bottom of this file, which adds
-   display:flex / flex-direction:column / gap the two rules merge */
-.content { flex: 1; overflow-y: auto; padding: 18px; }
-
-/* ---- search + filters ---- */
-.search-bar {
-    margin: 12px;
-    padding: 8px 10px;
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    color: var(--text);
-    font-family: inherit;
-    font-size: 13px;
-}
-.search-bar:focus { outline: none; border-color: var(--amber); }
-
-.class-filter {
-    display: flex; flex-wrap: wrap; gap: 6px;
-    padding: 0 12px 12px;
-    border-bottom: 1px solid var(--border);
-}
-.chip {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    color: var(--muted);
-    padding: 4px 10px;
-    font-family: inherit; font-size: 11px; cursor: pointer;
-}
-.chip:hover { border-color: var(--amber); color: var(--text); }
-.chip-active { background: var(--amber); color: #412402; border-color: var(--amber); }
-
-/* ---- anomaly list ---- */
-.anomaly-list { list-style: none; margin: 0; padding: 0; }
-.anomaly-row {
-    padding: 10px 12px;
-    border-bottom: 1px solid #1c231b;
-    border-left: 2px solid transparent;
-    cursor: pointer;
-}
-.anomaly-row:hover { background: #141812; }
-.anomaly-row.selected { background: #1a2016; border-left-color: var(--amber); }
-.row-number { display: block; font-size: 13px; }
-.row-meta { display: block; color: var(--muted); font-size: 11px; margin-top: 3px; }
-
-/* ---- detail card ---- */
-.detail-card {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 18px;
-    max-width: 560px;
-}
-.detail-header { display: flex; align-items: baseline; gap: 12px; }
-.detail-header h2 { margin: 0; font-size: 20px; font-weight: 500; }
-.detail-title { color: var(--muted); margin: 4px 0 14px; }
-
-.class-badge { font-size: 11px; padding: 2px 9px; border-radius: 10px; color: #10130f; }
-.class-safe { background: var(--safe); }
-.class-euclid { background: var(--euclid); }
-.class-keter { background: var(--keter); }
-.class-thaumiel { background: var(--thaumiel); }
-.class-neutralized { background: var(--neutralized); }
-
-.detail-image {
-    width: 100%; max-height: 220px; object-fit: cover;
-    border-radius: 4px; border: 1px solid var(--border);
-}
-.detail-image.placeholder {
-    height: 90px; display: flex; align-items: center; justify-content: center;
-    color: #5c665b; background: #0f120e; font-size: 12px;
-}
-
-.detail-stats {
-    display: grid; grid-template-columns: auto 1fr; gap: 4px 16px;
-    margin: 16px 0; font-size: 12px;
-}
-.detail-stats dt { color: var(--muted); }
-.detail-stats dd { margin: 0; }
-.detail-description { line-height: 1.7; color: #c3ccbf; font-size: 13px; }
-
-/* ---- states ---- */
-.status-message, .detail-empty, .empty-state {
-    color: var(--muted); padding: 18px; font-size: 13px;
 }
 
 /* ---- nav ---- */
 .navbar {
     display: flex; align-items: center; gap: 24px;
-    padding: 12px 18px; border-bottom: 1px solid var(--border);
+    padding: 10px 18px;
+    border-bottom: 1px solid var(--bs-hairline);
+    flex: 0 0 auto;
 }
-.brand { font-weight: 500; letter-spacing: 0.05em; }
-.nav-links { display: flex; gap: 16px; flex: 1; }
-.nav-links a, .nav-user a { color: var(--muted); text-decoration: none; font-size: 13px; }
-.nav-links a.active { color: var(--amber); }
-.nav-links a:hover, .nav-user a:hover { color: var(--text); }
-.nav-user { display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--muted); }
+.brand {
+    font-family: var(--bs-display);
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: -.04em;
+    color: var(--bs-ceiling);
+}
+.nav-links { display: flex; gap: 18px; flex: 1; }
+.nav-links a, .nav-user a {
+    font-family: var(--bs-micro);
+    font-size: var(--bs-size-code);
+    letter-spacing: var(--bs-track-code);
+    color: var(--bs-tertiary);
+    white-space: nowrap;
+}
+/* the active link is NOT red; red is reserved for danger and denial */
+.nav-links a.active { color: var(--bs-ceiling); }
+.nav-links a:hover, .nav-user a:hover { color: var(--bs-ceiling); }
+
+.nav-user {
+    display: flex; align-items: center; gap: 12px;
+    font-size: var(--bs-size-micro);
+    letter-spacing: var(--bs-track-micro);
+    color: var(--bs-muted);
+}
 .nav-user button {
-    background: none; border: 1px solid var(--border); border-radius: 4px;
-    color: var(--muted); padding: 4px 10px; font-family: inherit; font-size: 11px; cursor: pointer;
+    background: none;
+    border: 1px solid transparent;
+    color: var(--bs-tertiary);
+    padding: 5px 9px;
+    font-size: var(--bs-size-code);
+    letter-spacing: var(--bs-track-code);
 }
+.nav-user button:hover { border-color: var(--bs-hairline); color: var(--bs-ceiling); }
+
+/* brand lockup: mark, 1px hairline, wordmark on one baseline */
+.brand-lockup { display: inline-flex; align-items: center; gap: 12px; }
+.brand-lockup .brand-rule { width: 1px; align-self: stretch; background: var(--bs-hairline); }
+.brand-lockup img { opacity: .55; }
+.brand-lockup:hover img { opacity: 1; }
+
+/* the mark sweeps like an instrument, it does not spin like a logo */
+.bs-mark-scan { display: inline-block; animation: bsMarkSweep 4.8s steps(12, end) infinite; }
+.bs-mark-scan > * { display: block; animation: bsMarkPush 2.4s steps(4, end) infinite; }
+@keyframes bsMarkSweep { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes bsMarkPush { 0%, 100% { transform: scale(1); } 50% { transform: scale(.88); } }
+
+/* ---- search + filters ---- */
+/* borderless query line: a red / prompt on a single bottom hairline, no box */
+.search-bar {
+    margin: 0;
+    padding: 10px 12px 10px 26px;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--bs-hairline);
+    color: var(--bs-tertiary);
+    font-family: var(--bs-micro);
+    font-size: var(--bs-size-code);
+    letter-spacing: var(--bs-track-code);
+    cursor: var(--bs-cursor);
+}
+.search-bar:focus { outline: none; color: var(--bs-ceiling); }
+.search-bar::placeholder { color: var(--bs-recessed); }
+/* the / prompt, drawn on the sidebar so no JSX change is needed */
+.sidebar { position: relative; }
+.sidebar::before {
+    content: "/";
+    position: absolute; left: 12px; top: 11px;
+    font-family: var(--bs-micro);
+    font-size: var(--bs-size-micro);
+    letter-spacing: var(--bs-track-code);
+    color: var(--bs-signal);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.class-filter {
+    display: flex; flex-wrap: wrap; gap: 3px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--bs-hairline);
+}
+.chip {
+    display: inline-block;
+    background: transparent;
+    border: 1px solid var(--bs-hairline);
+    border-radius: 0;
+    color: var(--bs-tertiary);
+    padding: 4px;
+    font-family: var(--bs-micro);
+    font-size: var(--bs-size-micro);
+    line-height: 1.05;
+    letter-spacing: var(--bs-track-micro);
+    white-space: nowrap;
+}
+.chip:hover { border-color: var(--bs-tertiary); color: var(--bs-ceiling); }
+/* the active filter inverts to a solid slab with knocked-out black text */
+.chip-active,
+.chip-active:hover {
+    background: var(--bs-tertiary);
+    border-color: var(--bs-tertiary);
+    color: #000;
+}
+
+/* ---- anomaly list ---- */
+.anomaly-list { list-style: none; margin: 0; padding: 0; }
+.anomaly-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 9px;
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--bs-hairline-in);
+    border-left: 1px solid transparent;
+    background: transparent;
+    cursor: var(--bs-cursor);
+}
+.anomaly-row:hover { background: var(--bs-stage-hot); }
+.anomaly-row:hover .row-number {
+    color: var(--bs-ceiling);
+    animation: bsFlick .5s steps(2) 1;
+}
+/* selection is a 1px left hairline plus the red-shifted ground, not a red bar */
+.anomaly-row.selected {
+    background: var(--bs-stage-hot);
+    border-left-color: var(--bs-tertiary);
+}
+.anomaly-row.selected .row-number { color: var(--bs-ceiling); }
+
+.row-number {
+    display: block;
+    font-family: var(--bs-ui);
+    font-size: var(--bs-size-title);
+    line-height: 1.1;
+    letter-spacing: var(--bs-track-title);
+    color: var(--bs-tertiary);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.row-meta {
+    display: block;
+    margin-top: 4px;
+    font-family: var(--bs-micro);
+    font-size: var(--bs-size-micro);
+    letter-spacing: var(--bs-track-micro);
+    color: var(--bs-muted);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.row-number { grid-column: 1; grid-row: 1; }
+.row-meta { grid-column: 1; grid-row: 2; }
+.anomaly-row .class-badge { grid-column: 2; grid-row: 1 / span 2; }
+
+@keyframes bsFlick { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+
+/* ---- content: the map moves out of the flow and into a right rail ----
+   Dashboard renders <AnomalyMap /> then the detail card as siblings inside
+   .content. Placing .content on a grid pins the map to a 344px right column
+   spanning both rows, so the record file gets the whole centre column and
+   the map stops being a banner that pushes the file down the page. */
+.content {
+    flex: 1;
+    min-width: 0;
+    display: grid;
+    grid-template-columns: minmax(420px, 1fr) 344px;
+    grid-template-rows: auto 1fr;
+    gap: 0 24px;
+    overflow-y: auto;
+    padding: 0 0 0 24px;
+}
+.map-rail {
+    grid-column: 2; grid-row: 1 / span 2;
+    align-self: start;
+    display: flex; flex-direction: column;
+    border-left: 1px solid var(--bs-hairline);
+}
+.detail-card, .detail-empty { grid-column: 1; grid-row: 1; }
+
+.map-stage { position: relative; }
+
+.stage-toolbar {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--bs-hairline);
+}
+.toolbar-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--bs-tertiary);
+    padding: 3px 6px;
+    font-family: var(--bs-micro);
+    font-size: 9px;
+    letter-spacing: var(--bs-track-code);
+}
+.toolbar-btn:hover { color: var(--bs-ceiling); }
+.toolbar-btn.active { border-color: var(--bs-hairline); color: var(--bs-ceiling); }
+
+.rail-panel { padding: 12px; }
+.rail-label {
+    font-family: var(--bs-micro);
+    font-size: var(--bs-size-code);
+    letter-spacing: var(--bs-track-code);
+    color: var(--bs-label);
+    margin: 0 0 8px;
+}
+.rail-panel + .rail-panel { padding-top: 0; }
+
+/* label/value readout: label left in muted, value right at ceiling */
+.status-list {
+    margin: 0; display: grid; grid-template-columns: auto 1fr;
+    border-top: 1px solid var(--bs-hairline);
+    font-family: var(--bs-micro);
+    font-size: var(--bs-size-micro);
+    letter-spacing: var(--bs-track-micro);
+}
+.status-list dt { color: var(--bs-muted); padding: 5px 0; border-bottom: 1px solid var(--bs-hairline-in); }
+.status-list dd { margin: 0; padding: 5px 0; text-align: right; color: var(--bs-ceiling); border-bottom: 1px solid var(--bs-hairline-in); }
+.status-list dd.hot { color: var(--bs-signal); }
+
+.plot-legend { display: flex; flex-direction: column; gap: 5px; }
+.legend-row {
+    display: flex; align-items: center; gap: 9px;
+    font-family: var(--bs-micro);
+    font-size: 9px;
+    letter-spacing: var(--bs-track-code);
+    color: var(--bs-muted);
+}
+.legend-dot { width: 7px; height: 7px; border-radius: 50%; flex: 0 0 7px; }
+.legend-row span:nth-child(2) { flex: 1; }
+.legend-count { color: var(--bs-recessed); }
+
+/* ---- the stage: the signature element ----
+   A viewport dressed as a surveillance feed. The two line rhythms MUST stay
+   mismatched; 4px horizontal against 21px vertical is what separates
+   "instrument readout" from "CRT filter".
+   z-index 650 threads the overlay above Leaflet's tile panes (200-700) and
+   below its controls (800); pointer-events:none keeps the map draggable. */
+.anomaly-map {
+    position: relative;
+    height: 318px;
+    flex: 0 0 318px;
+    align-self: start;
+    margin: 0;
+    border: 0;
+    border-bottom: 1px solid var(--bs-hairline-in);
+    border-left: 1px solid var(--bs-hairline);
+    border-radius: 0;
+    background: var(--bs-stage);
+    overflow: hidden;
+    cursor: var(--bs-cursor);
+}
+.anomaly-map:hover { background: var(--bs-stage-hot); }
+
+/* Overlay 1 - drifting scanlines. These DARKEN the feed, so no blend mode:
+   screen-blending black over a dark basemap is a no-op and the lines vanish.
+   z-index 650 threads above Leaflet's tile panes (200-700), below its controls. */
+.stage-scan {
+    position: absolute; inset: 0; z-index: 650;
+    pointer-events: none;
+    background:
+        repeating-linear-gradient(0deg, rgba(0,0,0,.62) 0 1px, transparent 1px 4px),
+        repeating-linear-gradient(90deg, rgba(255,0,0,.10) 0 1px, transparent 1px 21px);
+    animation: bsScan 3.6s linear infinite;
+}
+.map-stage:hover .stage-scan { background-color: rgba(255,0,0,.04); }
+
+/* Overlay 2 - the 28px measurement grid. Off by default: geography is
+   already a grid, so this is opt-in from the toolbar. */
+.stage-grid {
+    position: absolute; inset: 0; z-index: 651;
+    pointer-events: none;
+    background:
+        linear-gradient(90deg, rgba(255,0,0,.22) 0 1px, transparent 1px),
+        linear-gradient(0deg, rgba(255,0,0,.18) 0 1px, transparent 1px);
+    background-size: 28px 28px;
+    opacity: .5;
+}
+.stage-thermal {
+    position: absolute; inset: 0; z-index: 652;
+    pointer-events: none;
+    mix-blend-mode: color;
+    background: linear-gradient(180deg, #ff0000 0%, #d9a441 55%, #7fa8c9 100%);
+    opacity: .55;
+}
+.stage-tag {
+    position: absolute; left: 10px; bottom: 8px; z-index: 700;
+    pointer-events: none;
+    font-family: var(--bs-micro);
+    font-size: 9px;
+    letter-spacing: var(--bs-track-code);
+    color: var(--bs-label);
+}
+
+@keyframes bsScan {
+    from { background-position: 0 0, 0 0; }
+    to   { background-position: 0 4px, 21px 0; }
+}
+
+/* ---- detail card ----
+   Hairline top and bottom on a transparent ground. No fill, no elevation,
+   no radius. Sections divide by hairlines, never by a background change. */
+.detail-card {
+    background: transparent;
+    border: 0;
+    border-top: 1px solid var(--bs-hairline);
+    border-bottom: 1px solid var(--bs-hairline);
+    border-radius: 0;
+    padding: 18px 0;
+    max-width: none;
+    margin: 18px 0;
+}
+/* instrument tag: ITEM 04/17 - SUBJECT: SCP-173. Positive tracking against the
+   negative tracking of the number below it - that inversion is the type rule. */
+.detail-code {
+    font-family: var(--bs-micro);
+    font-size: var(--bs-size-code);
+    letter-spacing: var(--bs-track-code);
+    color: var(--bs-signal);
+    margin: 0 0 2px;
+}
+.detail-footer {
+    font-family: var(--bs-micro);
+    font-size: var(--bs-size-code);
+    letter-spacing: var(--bs-track-code);
+    color: var(--bs-muted);
+    margin: 18px 0 0;
+    padding-top: 10px;
+    border-top: 1px solid var(--bs-hairline);
+}
+.detail-header { display: flex; align-items: center; gap: 12px; }
+/* the one monumental element per screen. -.05em tracking, Martian Mono 800 */
+.detail-header h2 {
+    margin: 0;
+    font-family: var(--bs-display);
+    font-weight: 800;
+    font-size: var(--bs-size-number);
+    line-height: .9;
+    letter-spacing: -.05em;
+    color: var(--bs-ceiling);
+}
+.detail-title {
+    font-family: var(--bs-ui);
+    font-size: var(--bs-size-title);
+    letter-spacing: var(--bs-track-title);
+    color: var(--bs-tertiary);
+    margin: 6px 0 16px;
+}
+
+/* object-class hue at text scale — the ONLY place it is allowed */
+.class-badge {
+    display: inline-block;
+    font-family: var(--bs-micro);
+    font-size: var(--bs-size-micro);
+    line-height: 1.05;
+    letter-spacing: var(--bs-track-micro);
+    padding: 4px;
+    border: 1px solid var(--bs-hairline);
+    border-radius: 0;
+    background: transparent;
+    color: var(--bs-ceiling);
+}
+.class-safe { color: var(--safe); }
+.class-euclid { color: var(--euclid); }
+.class-keter { color: var(--keter); }
+.class-thaumiel { color: var(--thaumiel); }
+.class-neutralized { color: var(--neutralized); }
+.class-unclassified { color: var(--unclassified); }
+
+/* imagery is graded cold and scanned; missing imagery is [DATA EXPUNGED]
+   over the 28px measurement grid */
+.detail-image {
+    width: 100%; max-height: 220px; object-fit: cover;
+    border-radius: 0;
+    border: 0;
+    border-top: 1px solid var(--bs-hairline-in);
+    border-bottom: 1px solid var(--bs-hairline-in);
+    filter: grayscale(.6) contrast(1.15) brightness(.85);
+}
+.detail-image.placeholder {
+    position: relative;
+    height: 150px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bs-stage);
+    color: var(--bs-unclassified);
+    font-family: var(--bs-micro);
+    font-size: var(--bs-size-micro);
+    letter-spacing: var(--bs-track-code);
+    text-transform: uppercase;
+    overflow: hidden;
+}
+.detail-image.placeholder::before {
+    content: "";
+    position: absolute; inset: 0; z-index: 1;
+    pointer-events: none;
+    background:
+        linear-gradient(90deg, rgba(255,0,0,.22) 0 1px, transparent 1px),
+        linear-gradient(0deg, rgba(255,0,0,.18) 0 1px, transparent 1px);
+    background-size: 28px 28px;
+    opacity: .28;
+}
+.detail-image.placeholder::after {
+    content: "";
+    position: absolute; inset: 0; z-index: 2;
+    pointer-events: none;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,.54) 0 1px, transparent 1px 4px);
+    opacity: .62;
+    mix-blend-mode: screen;
+    animation: bsScan 3.6s linear infinite;
+}
+
+/* label/value readout rows: label left in muted, value right at ceiling */
+.detail-stats {
+    display: grid; grid-template-columns: auto 1fr;
+    gap: 0 18px;
+    margin: 18px 0;
+    font-family: var(--bs-micro);
+    font-size: var(--bs-size-micro);
+    letter-spacing: var(--bs-track-micro);
+}
+.detail-stats dt {
+    color: var(--bs-muted);
+    padding: 5px 0;
+    border-top: 1px solid var(--bs-hairline-in);
+}
+.detail-stats dd {
+    margin: 0;
+    color: var(--bs-ceiling);
+    padding: 5px 0;
+    border-top: 1px solid var(--bs-hairline-in);
+}
+
+/* the ONE place uppercase is dropped: the document body reads as a retrieved
+   typed file rather than an interface label */
+.detail-description {
+    font-family: var(--bs-doc);
+    font-size: var(--bs-size-doc);
+    line-height: 1.7;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--bs-body);
+    max-width: 68ch;
+}
+
+.detail-subhead {
+    font-family: var(--bs-micro);
+    font-size: var(--bs-size-micro);
+    letter-spacing: var(--bs-track-code);
+    color: var(--bs-label);
+    font-weight: 400;
+    margin: 20px 0 8px;
+    padding-top: 10px;
+    border-top: 1px solid var(--bs-hairline);
+}
+.approach-list {
+    margin: 0 0 16px;
+    padding-left: 0;
+    list-style: none;
+    font-family: var(--bs-micro);
+    font-size: var(--bs-size-micro);
+    letter-spacing: var(--bs-track-micro);
+    line-height: 1.9;
+    color: var(--bs-body);
+    counter-reset: approach;
+}
+.approach-list li { counter-increment: approach; display: flex; gap: 9px; }
+.approach-list li::before {
+    content: counter(approach, decimal-leading-zero);
+    color: var(--bs-signal);
+    flex: 0 0 auto;
+}
+
+/* ---- states ----
+   The system states a condition. It never addresses the user as "you"
+   and it never apologizes. Copy strings live in the JSX; see the
+   translation table in the BLACKSITE guide. */
+.status-message, .detail-empty, .empty-state {
+    color: var(--bs-muted);
+    padding: 18px 0;
+    font-family: var(--bs-micro);
+    font-size: var(--bs-size-micro);
+    letter-spacing: var(--bs-track-code);
+    text-transform: uppercase;
+}
+.empty-state { padding: 18px 12px; }
+
+/* ---- telemetry strip ----
+   Sits directly under the nav, closed by its own hairline. Left side is the
+   instrument readout; LINK reflects the real fetch state from AnomalyContext. */
+.telemetry {
+    display: flex; align-items: center; gap: 18px;
+    padding: 6px 18px;
+    border-bottom: 1px solid var(--bs-hairline);
+    font-family: var(--bs-micro);
+    font-size: 9px;
+    letter-spacing: var(--bs-track-code);
+    color: var(--bs-muted);
+    flex: 0 0 auto;
+}
+.tel-site { color: var(--bs-tertiary); }
+.tel-cjk { color: var(--bs-recessed); }
+.tel-spacer { flex: 1; }
+.tel-link-severed { color: var(--bs-signal); }
+
+/* ---- property chips on the record file ----
+   The class badge and the record's own properties on one hairline-closed band.
+   Object-class hue appears on the badge only; the chips stay in the grey ladder. */
+.detail-chips {
+    display: flex; align-items: center; flex-wrap: wrap;
+    gap: 6px 10px;
+    margin: 14px 0 0;
+    padding: 10px 0;
+    border-top: 1px solid var(--bs-hairline);
+    border-bottom: 1px solid var(--bs-hairline);
+}
+.chip-spacer { flex: 1; }
+.chip-static {
+    display: inline-block;
+    border: 1px solid var(--bs-hairline);
+    color: var(--bs-ceiling);
+    padding: 4px;
+    font-family: var(--bs-micro);
+    font-size: var(--bs-size-micro);
+    line-height: 1.05;
+    letter-spacing: var(--bs-track-micro);
+    white-space: nowrap;
+}
+.chip-static.hot { border-color: var(--bs-signal-dim); color: var(--bs-signal); }
+
+/* ---- page head: instrument tag, display heading, right-aligned readout ---- */
+.page-code {
+    font-family: var(--bs-micro);
+    font-size: var(--bs-size-code);
+    letter-spacing: var(--bs-track-code);
+    color: var(--bs-signal);
+    margin: 0 0 2px;
+}
+.page-head {
+    display: flex; align-items: flex-end; gap: 24px;
+    padding-bottom: 14px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--bs-hairline);
+}
+.page-head h2 { margin: 0; padding: 0; border: 0; }
+.page-note {
+    margin-left: auto;
+    text-align: right;
+    font-family: var(--bs-micro);
+    font-size: 9px;
+    letter-spacing: var(--bs-track-code);
+    color: var(--bs-muted);
+    line-height: 1.9;
+}
+.page-note .dim { color: var(--bs-recessed); display: block; }
+
+/* ---- personnel roster: a four-column readout, not a list ---- */
+.roster { display: block; }
+.roster-head, .roster-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) 90px 120px;
+    gap: 18px;
+}
+.roster-head {
+    padding: 9px 0;
+    border-bottom: 1px solid var(--bs-hairline);
+    font-family: var(--bs-micro);
+    font-size: 9px;
+    letter-spacing: var(--bs-track-code);
+    color: var(--bs-recessed);
+}
+.roster-row {
+    align-items: baseline;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--bs-hairline-in);
+}
+.roster-name {
+    font-family: var(--bs-ui);
+    font-size: var(--bs-size-title);
+    letter-spacing: var(--bs-track-title);
+    color: var(--bs-ceiling);
+}
+.roster-clearance {
+    font-family: var(--bs-micro);
+    font-size: var(--bs-size-code);
+    letter-spacing: var(--bs-track-code);
+    color: var(--bs-label);
+}
+.roster-points {
+    font-family: var(--bs-ui);
+    font-size: var(--bs-size-title);
+    letter-spacing: var(--bs-track-title);
+    color: var(--bs-tertiary);
+    text-align: right;
+}
+.roster-status {
+    font-family: var(--bs-micro);
+    font-size: var(--bs-size-micro);
+    letter-spacing: var(--bs-track-micro);
+    text-align: right;
+    color: var(--bs-tertiary);
+}
+.roster-status.redacted { color: var(--bs-signal); }
+.roster-status.open { color: var(--bs-recessed); }
+.roster-head span:nth-child(3), .roster-head span:nth-child(4) { text-align: right; }
+
+/* ---- submit: form left, live "as it will be filed" preview right ---- */
+.split {
+    flex: 1; min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(360px, 1fr) minmax(360px, 1fr);
+    overflow-y: auto;
+}
+.split > * { padding: 22px 24px 40px; min-width: 0; }
+.split > :first-child { border-right: 1px solid var(--bs-hairline); }
+.preview-card {
+    margin-top: 12px;
+    padding: 16px 0;
+    border-top: 1px solid var(--bs-hairline);
+    border-bottom: 1px solid var(--bs-hairline);
+}
+.preview-number {
+    font-family: var(--bs-display);
+    font-weight: 800;
+    font-size: 56px;
+    line-height: .9;
+    letter-spacing: -.05em;
+    color: var(--bs-recessed);
+    margin: 2px 0 0;
+}
+.preview-foot {
+    margin-top: 12px;
+    font-family: var(--bs-micro);
+    font-size: 9px;
+    letter-spacing: var(--bs-track-code);
+    color: var(--bs-recessed);
+    line-height: 1.9;
+}
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* ---- review queue: master/detail, not stacked cards ---- */
+.queue-body { display: flex; flex: 1; min-height: 0; }
+.queue-list {
+    width: 300px; flex: 0 0 300px;
+    border-right: 1px solid var(--bs-hairline);
+    display: flex; flex-direction: column;
+    min-height: 0;
+}
+.queue-list-head { padding: 12px; border-bottom: 1px solid var(--bs-hairline); }
+.queue-list ul { list-style: none; margin: 0; padding: 0; overflow-y: auto; }
+.queue-detail { flex: 1; min-width: 0; overflow-y: auto; padding: 22px 24px 40px; }
+.queue-title {
+    font-family: var(--bs-ui);
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: -.02em;
+    color: var(--bs-ceiling);
+    margin: 6px 0 0;
+}
+.queue-meta {
+    font-family: var(--bs-micro);
+    font-size: 9px;
+    letter-spacing: var(--bs-track-code);
+    color: var(--bs-muted);
+    margin: 8px 0 0;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--bs-hairline);
+}
+.queue-fields { display: grid; grid-template-columns: 1fr 1fr 110px; gap: 12px; margin-top: 10px; }
 
 /* ---- shared page bits ---- */
-.page { padding: 18px; max-width: 720px; }
-.page h2 { font-weight: 500; margin-top: 0; }
-.detail-subhead { font-size: 13px; color: var(--muted); margin: 14px 0 6px; font-weight: 500; }
-.approach-list { margin: 0 0 14px; padding-left: 18px; font-size: 13px; line-height: 1.7; }
+.page { padding: 22px 24px 40px; max-width: 900px; }
+.page h2 {
+    font-family: var(--bs-display);
+    font-weight: 800;
+    font-size: 48px;
+    line-height: .9;
+    letter-spacing: -.05em;
+    color: var(--bs-ceiling);
+    margin: 0 0 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--bs-hairline);
+}
+
+/* ---- forms ----
+   Transparent ground, 1px hairline that brightens to --bs-tertiary on focus,
+   uppercase micro label above. */
 .form-field { display: block; margin-bottom: 12px; }
-.form-field span { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+.form-field span {
+    display: block;
+    font-family: var(--bs-micro);
+    font-size: var(--bs-size-micro);
+    letter-spacing: var(--bs-track-micro);
+    color: var(--bs-label);
+    margin-bottom: 5px;
+}
 .form-field input, .form-field textarea, .form-field select {
-    width: 100%; padding: 8px 10px; background: var(--panel);
-    border: 1px solid var(--border); border-radius: 4px;
-    color: var(--text); font-family: inherit; font-size: 13px;
+    width: 100%;
+    padding: 8px 10px;
+    background: transparent;
+    border: 1px solid var(--bs-hairline);
+    border-radius: 0;
+    color: var(--bs-ceiling);
+    font-family: var(--bs-micro);
+    font-size: var(--bs-size-code);
+    letter-spacing: var(--bs-track-code);
+    outline: none;
+    cursor: var(--bs-cursor);
+    resize: vertical;
 }
+.form-field input:focus, .form-field textarea:focus, .form-field select:focus {
+    border-color: var(--bs-tertiary);
+}
+.form-field option { background: #000; }
+
+/* bordered terminal button. red is reserved for reject/deny — never submit */
 .btn {
-    background: var(--amber); color: #412402; border: none; border-radius: 4px;
-    padding: 8px 16px; font-family: inherit; font-size: 13px; cursor: pointer;
+    display: inline-block;
+    background: transparent;
+    border: 1px solid var(--bs-hairline);
+    border-radius: 0;
+    color: var(--bs-ceiling);
+    padding: 8px 14px;
+    font-family: var(--bs-micro);
+    font-size: var(--bs-size-code);
+    letter-spacing: var(--bs-track-code);
+    text-align: center;
+    white-space: nowrap;
+    cursor: var(--bs-cursor);
 }
-.btn-secondary { background: var(--panel); color: var(--text); border: 1px solid var(--border); }
-.form-error { color: var(--keter); font-size: 12px; margin: 8px 0; }
-.form-success { color: var(--safe); font-size: 12px; margin: 8px 0; }
+.btn:hover { border-color: var(--bs-tertiary); }
+.btn:disabled { border-color: var(--bs-hairline-in); color: #3a3a3a; cursor: not-allowed; }
+.btn-secondary { color: var(--bs-tertiary); }
+.btn-secondary:hover { color: var(--bs-ceiling); }
+/* apply .btn-danger to the Reject control in Command.jsx */
+.btn-danger { color: var(--bs-signal); border-color: var(--bs-signal-dim); }
+.btn-danger:hover { border-color: var(--bs-signal); color: var(--bs-signal); }
 
-/* ---- layout ---- */
-.app { display: flex; flex-direction: column; height: 100vh; }
-
-.app-body { display: flex; flex: 1; overflow: hidden; }
-
-/* ---- map ----
-   Leaflet has no intrinsic size: it measures its container and paints into it,
-   so without an explicit height the element collapses to 0 and you get blank
-   space, tiles that never request, and no console error saying why. Hence the
-   fixed 340px below rather than a percentage - `height: 100%` would only work
-   if every ancestor also had a resolved height.
-
-   .content is made a column flex container here so the map and the detail card
-   stack with a gap. NOTE it is also declared near the top of this file
-   (flex/overflow-y/padding); the two rules merge, but they are ~150 lines
-   apart, so a change in one place will not be obvious from the other.
-
-   flex: 0 0 340px pins the map on the main axis (height, in a column) so it
-   never shrinks when the detail card gets tall; .content scrolls instead. The
-   height declaration duplicates that on purpose - it is the fallback if
-   .content ever stops being a flex container.
-
-   Still outstanding: if the map is ever mounted hidden (a tab, a collapsed
-   panel) it measures 0 and stays broken after being revealed.
-   map.invalidateSize() on reveal is the fix for that case. */
-.content { display: flex; flex-direction: column; gap: 16px; }
-.anomaly-map {
-    height: 340px;
-    flex: 0 0 340px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    background: #0c0f0b;
+.form-error {
+    color: var(--bs-signal);
+    font-family: var(--bs-micro);
+    font-size: var(--bs-size-micro);
+    letter-spacing: var(--bs-track-micro);
+    margin: 8px 0;
+}
+.form-success {
+    color: var(--bs-label);
+    font-family: var(--bs-micro);
+    font-size: var(--bs-size-micro);
+    letter-spacing: var(--bs-track-micro);
+    margin: 8px 0;
 }
 
-/* Leaflet ships light-themed popups and attribution; retheme them.
-
+/* ---- leaflet retheme ----
    These are plain single-class selectors, so they tie Leaflet's own rules on
-   specificity and the cascade comes down purely to load order. That is why
-   main.jsx imports 'leaflet/dist/leaflet.css' BEFORE './index.css'. Swap those
-   two lines back and every rule below silently stops applying - white popups,
-   #ddd behind the map tiles - with nothing in the console to explain it.
-
-   The !important on the zoom control is a leftover from when the order was
-   wrong; it is no longer needed. Same for the .leaflet-container prefixes
-   further down, which were boosting specificity to win a fight that no longer
-   happens. Both are harmless to leave. */
+   specificity and the cascade comes down purely to load order. main.jsx must
+   keep importing 'leaflet/dist/leaflet.css' BEFORE './index.css'. */
+.leaflet-container { background: var(--bs-stage); }
 .leaflet-popup-content-wrapper,
 .leaflet-popup-tip {
-    background: var(--panel);
-    color: var(--text);
-    font-family: inherit;
-    font-size: 12px;
-    border-radius: 4px;
+    background: #000;
+    border: 1px solid var(--bs-hairline);
+    color: var(--bs-body);
+    font-family: var(--bs-micro);
+    font-size: var(--bs-size-micro);
+    letter-spacing: var(--bs-track-micro);
+    text-transform: uppercase;
+    border-radius: 0;
+    box-shadow: none;
 }
 .leaflet-popup-content { margin: 8px 12px; line-height: 1.5; }
-.leaflet-container a.leaflet-popup-close-button { color: var(--muted); }
+.leaflet-popup-content strong { color: var(--bs-ceiling); font-weight: 400; }
+.leaflet-container a.leaflet-popup-close-button { color: var(--bs-muted); }
 .leaflet-container .leaflet-control-attribution {
-    background: rgba(15, 18, 16, 0.85);
-    color: var(--muted);
-    font-size: 10px;
+    background: rgba(0, 0, 0, .85);
+    color: var(--bs-recessed);
+    font-family: var(--bs-micro);
+    font-size: 9px;
+    letter-spacing: var(--bs-track-micro);
+    text-transform: uppercase;
 }
-.leaflet-container .leaflet-control-attribution a { color: var(--amber); }
+.leaflet-container .leaflet-control-attribution a { color: var(--bs-muted); }
 .leaflet-control-zoom a {
-    background: var(--panel) !important;
-    color: var(--text) !important;
-    border-color: var(--border) !important;
+    background: #000;
+    color: var(--bs-tertiary);
+    border-color: var(--bs-hairline);
+    border-radius: 0;
 }
+.leaflet-control-zoom a:hover { color: var(--bs-ceiling); }
 
+@media (prefers-reduced-motion: reduce) {
+    .bs-mark-scan, .bs-mark-scan > *,
+    .stage-scan, .detail-image.placeholder::after,
+    .anomaly-row:hover .row-number { animation: none !important; }
+}

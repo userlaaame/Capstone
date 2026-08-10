@@ -23,7 +23,7 @@ if (!submitter) {
 }
 
 const base = {
-    title: 'GEO-CHECK - safe to delete',
+    title: 'GEO-CHECK safe to delete',
     description: 'Created by scripts/geo-check.mjs',
     status: 'pending',
     submittedBy: submitter._id,

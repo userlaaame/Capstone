@@ -29,7 +29,7 @@ export const protect = async (req, res, next) => {
     }
     //the re-fetch is pointless unless status is actually enforced
     if (LOCKED_OUT_STATUSES.includes(user.status)) {
-        return res.status(403).json({ error: `Account is flagged ${user.status} - access revoked` });
+        return res.status(403).json({ error: `Account is flagged ${user.status} access revoked` });
     }
 
     req.user = user;    //downstream routes read this

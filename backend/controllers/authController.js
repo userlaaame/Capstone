@@ -7,7 +7,7 @@ const TOKEN_EXPIRY = '7d';
 const MAX_PASSWORD_BYTES = 72; //bcrypt reads no further, anything past this is silently ignored
 
 //Compared against when no user matches, so a failed login costs the same either
-//way. Without it the early return is ~50x faster and leaks which usernames exist.
+//way. Without it the early return is waaaaaaaay faster and leaks which usernames exist.
 const DUMMY_HASH = bcrypt.hashSync('placeholder-that-never-matches', SALT_ROUNDS);
 
 //This place is made for building tokens, so register and login never drift apart
@@ -58,7 +58,7 @@ export const login = async (req, res) => {
     }
     //this should stop constant request; after password checks so accounts stay hidden
     if (user.status !== 'Active') {
-        return res.status(403).json({ error: `Account is flagged ${user.status} - access revoked` });
+        return res.status(403).json({ error: `Account is flagged ${user.status} access revoked` });
     }
     res.json({ token: signToken(user), user });
 };
