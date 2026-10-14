@@ -177,9 +177,6 @@ real deployment would not ship one.
 
 Documented deliberately rather than hidden:
 
-- **Netlify deployment is not finished.** The frontend builds and deploys, but
-  browser requests to the API are being blocked. The application runs correctly
-  end to end on localhost. Resolution is the first task after submission.
 - **Writes are not atomic.** Creating a submission and awarding its points are
   two separate operations; a failure between them leaves points unawarded. The
   correct fix is a MongoDB transaction.
