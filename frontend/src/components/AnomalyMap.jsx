@@ -37,14 +37,21 @@ export default function AnomalyMap() {
     );
 
     return (
-        //TODO - .anomaly-map has no rule in index.css yet. Leaflet has no intrinsic
-        //size: it measures this element and draws into it, so with no height the
-        //container collapses to 0px and the map is invisible with no console error.
-        //Nothing here works until that rule exists.
+        //Leaflet has no intrinsic size: it measures this element and draws into it,
+        //so with no height the container collapses to 0px and the map is invisible
+        //with no console error. .anomaly-map sets that height in index.css.
         <MapContainer center={[25, 0]} zoom={2} className="anomaly-map" worldCopyJump>
             <TileLayer
-                url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+                //CARTO began watermarking keyless tiles with "API KEY REQUIRED" in
+                //Aug 2026. Esri's dark canvas needs no key, so nothing in this layer
+                //can expire out from under a live portfolio link.
+                //NOTE the path order: Esri is {z}/{y}/{x} - row BEFORE column, unlike
+                //every other provider. Swapping them serves wrong tiles, not an error.
+                url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}"
+                attribution='&copy; <a href="https://www.esri.com/">Esri</a>, HERE, Garmin, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                //this basemap stops at 16; past it Leaflet requests tiles that do not
+                //exist and the stage goes grey
+                maxZoom={16}
             />
 
             {located.map((scp) => {
