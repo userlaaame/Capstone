@@ -17,8 +17,8 @@ const pad = (n) => String(n).padStart(2, '0');
 
 export default function Dashboard() {
     const {
-        scps, status, error, searchText, classFilter, selectedId,
-        visibleScps, selected, setSearch, setClassFilter, selectScp,
+        scps, status, error, errorStatus, searchText, classFilter, selectedId,
+        visibleScps, selected, setSearch, setClassFilter, selectScp, loadScps,
     } = useAnomalies();
 
     //stage overlays. Toolbar labels name the EFFECT, not the control.
@@ -42,8 +42,20 @@ export default function Dashboard() {
     if (status === 'idle' || status === 'loading') {
         return <p className="status-message">Establishing secure connection...</p>
     }
+    //errorStatus 0 means the server was never reached (see api/client.js), which on
+    //a sleeping free-tier instance is a dormant link, not a failure. A real HTTP
+    //error still reads as one. Retry is offered either way - the cold start resolves
+    //itself in ~50s and a visitor should not have to guess that.
     if (status === 'failed') {
-        return <p className="status-message">Connection failed: {error}</p>
+        const dormant = errorStatus === 0;
+        return (
+            <div className="status-message">
+                <p>{dormant ? error : `Connection failed: ${error}`}</p>
+                <button className="btn" onClick={loadScps}>
+                    {dormant ? '[RETRY UPLINK]' : '[RECONNECT]'}
+                </button>
+            </div>
+        )
     }
 
     return (

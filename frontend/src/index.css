@@ -614,6 +614,11 @@ button, [role="button"], summary { cursor: var(--bs-cursor); }
 }
 .empty-state { padding: 18px 12px; }
 
+/* the failed/dormant early return renders OUTSIDE .content, so it misses that
+   column's left padding and sits flush against the window edge */
+div.status-message { padding: 22px 24px; }
+div.status-message p { margin: 0 0 14px; max-width: 52ch; }
+
 /* ---- telemetry strip ----
    Sits directly under the nav, closed by its own hairline. Left side is the
    instrument readout; LINK reflects the real fetch state from AnomalyContext. */

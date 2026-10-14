@@ -15,7 +15,7 @@ function zulu(d) {
 }
 
 export default function TelemetryStrip() {
-    const { status } = useAnomalies();
+    const { status, errorStatus } = useAnomalies();
     const [now, setNow] = useState(() => new Date());
 
     //ticks on the minute boundary rather than every second this is a readout,
@@ -25,7 +25,10 @@ export default function TelemetryStrip() {
         return () => clearInterval(id);
     }, []);
 
-    const link = LINK_STATE[status] ?? 'HANDSHAKE';
+    //A sleeping free-tier instance (errorStatus 0, server never reached) is DORMANT,
+    //not SEVERED. SEVERED stays red and means a real HTTP failure.
+    const dormant = status === 'failed' && errorStatus === 0;
+    const link = dormant ? 'DORMANT' : (LINK_STATE[status] ?? 'HANDSHAKE');
 
     return (
         <div className="telemetry">

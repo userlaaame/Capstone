@@ -17,7 +17,10 @@ export async function request(path, { method = 'GET', body, token } = {}) {
         //"Failed to fetch" which tells a user nothing. status 0 is the signal
         //to callers that the server was never reached AuthContext relies on
         //this to avoid throwing away a valid token when the API is just asleep.
-        const offline = new Error('Cannot reach the server. It may be starting up, try again in a moment.');
+        //In character on purpose: the API is on Render's free tier and sleeps after
+        //idle, so a first visit routinely waits ~50s. Reading that as a dormant link
+        //rather than a failure is both truer and better for a portfolio visitor.
+        const offline = new Error('Site-19 link dormant. Re-establishing uplink, stand by.');
         offline.status = 0;
         throw offline;
     }
